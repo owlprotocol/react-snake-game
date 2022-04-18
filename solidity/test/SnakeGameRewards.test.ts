@@ -4,7 +4,7 @@ import { keccak256 } from "ethers/lib/utils";
 import { MerkleTree } from "merkletreejs";
 import cbor from "cbor";
 // eslint-disable-next-line node/no-missing-import, camelcase
-import { CBORDecoding__factory, MerkleDB__factory, SnakeGameRewards__factory } from "../typechain";
+import { ByteParser__factory, CBORDecoding__factory, MerkleDB__factory, SnakeGameRewards__factory } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Highscore Claiming", function () {
@@ -14,6 +14,7 @@ describe("Highscore Claiming", function () {
     let CBORDecodingFactory: CBORDecoding__factory;
     // eslint-disable-next-line camelcase
     let SnakeGameRewards: SnakeGameRewards__factory;
+    let ByteParserFactory: ByteParser__factory;
     
     let user: SignerWithAddress;
     let user2: SignerWithAddress;
@@ -21,9 +22,11 @@ describe("Highscore Claiming", function () {
     before(async () => {
         CBORDecodingFactory = await ethers.getContractFactory("CBORDecoding");
         MerkleDBFactory = await ethers.getContractFactory("MerkleDB");
+        ByteParserFactory = await ethers.getContractFactory("ByteParser");
         SnakeGameRewards = await ethers.getContractFactory("SnakeGameRewards", {
             libraries: {
                 CBORDecoding: (await CBORDecodingFactory.deploy()).address,
+                ByteParser: (await ByteParserFactory.deploy()).address,
             },
         });
         [user, user2] = await ethers.getSigners();

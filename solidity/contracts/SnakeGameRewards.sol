@@ -6,8 +6,8 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 import "./merkledb/IMerkleDB.sol";
-import "./CBOR/CBORDecoding.sol";
-import "./CBOR/components/ByteUtils.sol";
+import "./solidity-cbor/CBORDecoding.sol";
+import "./solidity-cbor/ByteParser.sol";
 
 /**
  * @dev Documentation for contract.
@@ -41,14 +41,14 @@ contract SnakeGameRewards is ERC1155 {
 
         // Make sure it's the right user
         require(
-            ByteUtils.parseAddr(string(CBORDecoding.decodeCBORMappingGetValue(proof, _ADDRESS_KEY)))
+            ByteParser.parseAddr(CBORDecoding.decodeMappingGetValue(proof, _ADDRESS_KEY))
                  == msg.sender,
             "You are not the owner of that score!"
         );
 
         // Make sure it's the high score
-        uint256 userScore = ByteUtils.bytesToUint256(
-                    CBORDecoding.decodeCBORMappingGetValue(proof, _SCORE_KEY));
+        uint256 userScore = ByteParser.bytesToBigNumber(
+                    CBORDecoding.decodeMappingGetValue(proof, _SCORE_KEY));
         require(
             userScore > HIGH_SCORE,
             "You don't have the high score!"
@@ -67,7 +67,7 @@ contract SnakeGameRewards is ERC1155 {
     function getAddressHash(bytes memory proof) public view returns (address, address) {
         return (
             msg.sender,
-            ByteUtils.parseAddr(string(CBORDecoding.decodeCBORMappingGetValue(proof, _ADDRESS_KEY)))
+            ByteParser.parseAddr(CBORDecoding.decodeMappingGetValue(proof, _ADDRESS_KEY))
         );
     }
 
